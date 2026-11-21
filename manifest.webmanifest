@@ -1,0 +1,14 @@
+{
+  "name": "Crew rest calculator",
+  "short_name": "Crew Rest",
+  "description": "Augmented crew in-flight rest planner (UTC)",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#e9edf0",
+  "theme_color": "#14202b",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}

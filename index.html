@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14202b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Crew Rest">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Crew rest calculator</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+:root{--bg:#e9edf0;--panel:#fff;--ink:#14202b;--mute:#5b6b78;--line:#cdd6dc;--field:#f4f6f8;--fixed:#b9c3cb;--c0:#1b7f8c;--c1:#b86f0c;--c2:#6a58c9;--c3:#c2415f;--on:#fff;--warn:#b4232c;--ok:#23774a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e151b;--panel:#17212a;--ink:#e6edf2;--mute:#8fa1ae;--line:#2b3946;--field:#101920;--fixed:#33434f;--c0:#3bb3c2;--c1:#e6a03a;--c2:#9a8bf0;--c3:#ee7b95;--on:#0e151b;--warn:#ff8a92;--ok:#6fcf97;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e151b;--panel:#17212a;--ink:#e6edf2;--mute:#8fa1ae;--line:#2b3946;--field:#101920;--fixed:#33434f;--c0:#3bb3c2;--c1:#e6a03a;--c2:#9a8bf0;--c3:#ee7b95;--on:#0e151b;--warn:#ff8a92;--ok:#6fcf97;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 Barlow,system-ui,sans-serif;font-variant-numeric:tabular-nums}
+main{max-width:1020px;margin:0 auto;padding:28px 18px 48px}
+h1{font:700 34px/1.05 "Barlow Condensed",Barlow,sans-serif;margin:0 0 4px}
+.sub{color:var(--mute);margin:0 0 22px;max-width:62ch}
+.grid{display:grid;gap:18px;grid-template-columns:minmax(0,330px) minmax(0,1fr);align-items:start}
+@media(max-width:800px){.grid{grid-template-columns:minmax(0,1fr)}}
+html{-webkit-text-size-adjust:100%}body{overflow-x:hidden}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+h2{font:600 20px/1.1 "Barlow Condensed",Barlow,sans-serif;margin:0 0 12px}
+label{display:block;font-weight:500;font-size:14px;margin:0 0 4px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.f{margin-bottom:14px}.row .f{margin:0}
+input[type=text],input[type=number]{width:100%;font:inherit;font-size:17px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:8px 10px;min-height:42px}
+button,input,label{-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--c0);outline-offset:1px}
+.hint{font-size:13px;color:var(--mute);margin:4px 0 0}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+.seg3{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg3 button{flex:1;font:inherit;font-weight:600;min-height:42px;border:0;background:var(--field);color:var(--ink);cursor:pointer}
+.seg3 button+button{border-left:1px solid var(--line)}
+.seg3 button[aria-pressed=true]{background:var(--c0);color:var(--on)}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:15px;font-weight:500;cursor:pointer;margin:0}
+.chk input{width:20px;height:20px;margin-top:2px;flex:none}
+.cr{display:grid;grid-template-columns:34px 1fr 78px auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.cr:last-child{border-bottom:0}
+.cr small{display:block;color:var(--mute);font-size:12px}
+.cr input[type=number]{min-height:38px;padding:4px 8px;font-size:16px}
+.mv{display:flex;flex-direction:column;gap:2px}
+.mv button{width:30px;height:20px;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:4px;cursor:pointer;font-size:11px;line-height:1;padding:0}
+.mv button:disabled{opacity:.3;cursor:default}
+.dot{width:34px;height:26px;border-radius:5px;color:var(--on);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.gp{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0 6px 42px;border-bottom:1px solid var(--line);font-size:13px;color:var(--mute)}
+.gp .seg3{width:132px;flex:none}.gp .seg3 button{min-height:30px;font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
+.stat{border-left:3px solid var(--line);padding:2px 0 2px 10px}
+.stat b{display:block;font:600 26px/1.1 "Barlow Condensed",Barlow,sans-serif}
+.stat span{font-size:13px;color:var(--mute)}
+.bar{display:flex;height:46px;border-radius:6px;overflow:hidden;border:1px solid var(--line);margin:8px 0 4px}
+.s{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--on);overflow:hidden;white-space:nowrap;min-width:0}
+.s.fx{background:var(--fixed)}
+.axis{display:flex;justify-content:space-between;font-size:13px;color:var(--mute);margin-bottom:18px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);font-size:15px}
+th{font-weight:600;font-size:13px;color:var(--mute)}
+.ok{color:var(--ok);font-weight:600}.bad{color:var(--warn);font-weight:600}.mu{color:var(--mute)}
+.msg{border-left:4px solid var(--warn);padding:10px 12px;background:var(--field);border-radius:4px;margin-bottom:16px}
+.msg.good{border-color:var(--ok)}
+.xt{border:1px solid var(--c1);border-radius:4px;padding:0 6px;font-size:13px;font-weight:600;white-space:nowrap}
+.msg.spare{border-color:var(--c1)}
+.msg select{font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:6px 8px;min-height:38px;max-width:100%;margin-top:6px;display:block}
+.share{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-weight:600;font-size:16px;min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink);display:inline-flex;align-items:center;text-decoration:none;cursor:pointer}
+.btn.pri{background:var(--c0);border-color:var(--c0);color:var(--on)}
+.pv{margin-top:10px;font-size:14px}.pv summary{cursor:pointer;color:var(--mute);min-height:32px;padding:4px 0}
+.pv pre{white-space:pre-wrap;word-break:break-word;background:var(--field);border:1px solid var(--line);border-radius:6px;padding:10px;font:inherit;margin:6px 0 0}
+.pimg{max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px;margin-top:6px;display:block;background:#fff}
+.note{font-size:13px;color:var(--mute);margin-top:16px}
+</style>
+</head>
+<body>
+<main>
+<h1>Crew rest calculator</h1>
+<p class="sub">Four-person augmented crew. All times are 24-hour UTC.</p>
+<div class="grid">
+<section class="panel" aria-label="Inputs">
+<h2>Flight</h2>
+<div class="row">
+<div class="f"><label for="fh">Flight time, h</label><input id="fh" type="number" min="0" max="30" value="11" inputmode="numeric"></div>
+<div class="f"><label for="fm">min</label><input id="fm" type="number" min="0" max="59" value="30" inputmode="numeric"></div>
+</div>
+<div class="f"><label for="to">Takeoff, UTC (24h)</label><input id="to" type="text" value="22:15" inputmode="numeric" maxlength="5" placeholder="HH:MM" autocomplete="off"></div>
+<hr>
+<h2>Buffers</h2>
+<div class="row">
+<div class="f"><label for="bf">After takeoff, min</label><input id="bf" type="number" min="0" value="30" inputmode="numeric"></div>
+<div class="f"><label for="af">Before landing, min</label><input id="af" type="number" min="0" value="60" inputmode="numeric"></div>
+</div>
+<label id="gl">Default buffer between rests, min</label>
+<div class="seg3" role="group" aria-labelledby="gl" id="gap"><button type="button" data-g="5" aria-pressed="true">5</button><button type="button" data-g="10" aria-pressed="false">10</button><button type="button" data-g="15" aria-pressed="false">15</button></div>
+<hr>
+<label class="chk"><input type="checkbox" id="aug" checked><span>Flight requires augmentation<small class="hint" style="display:block;font-weight:400">Applies minimum rest: PF and PM 2 h, Relief Pilot 90 min.</small></span></label>
+<hr>
+<h2>Crew and rest order</h2>
+<p class="hint" style="margin:-6px 0 6px">Leave length on auto to share the window equally, or enter minutes to set a rest yourself. If every length is set and time is left over, it is shared across all rests automatically.</p>
+<p class="hint" style="margin:-6px 0 6px">Each buffer between two rests can be set separately. Choosing a default above resets them all.</p>
+<div id="crew"></div>
+</section>
+<section class="panel" aria-live="polite" id="out"></section>
+</div>
+<p class="note">Planning aid only. Check the result against your operator’s approved rest rules before use.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const crews=[
+ {id:"RP",name:"Relief Pilot",ab:"RP",min:90,inc:true,man:"",c:2,pilot:true},
+ {id:"PM",name:"Pilot Monitoring",ab:"PM",min:120,inc:true,man:"",c:1,pilot:true},
+ {id:"CS",name:"Cabin Server",ab:"CS",min:0,inc:true,man:"",c:3,pilot:false},
+ {id:"PF",name:"Pilot Flying",ab:"PF",min:120,inc:true,man:"",c:0,pilot:true}
+];
+const _old=[
+ {id:"PF",name:"Pilot Flying",ab:"PF",min:120,inc:true,man:"",c:0,pilot:true},
+ {id:"PM",name:"Pilot Monitoring",ab:"PM",min:120,inc:true,man:"",c:1,pilot:true},
+ {id:"RP",name:"Relief Pilot",ab:"RP",min:90,inc:true,man:"",c:2,pilot:true},
+ {id:"CS",name:"Cabin Server",ab:"CS",min:0,inc:true,man:"",c:3,pilot:false}
+];
+let G=5;let extraTo="auto";let shareText="",shareSub="",shareImg="";
+const esc=t=>t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");const gaps={};const gk=(a,b)=>[a.id,b.id].sort().join("|");const gp=(a,b)=>gaps[gk(a,b)]??G;const gsum=l=>l.reduce((s,c,i)=>i<l.length-1?s+gp(c,l[i+1]):s,0);
+const col=i=>"var(--c"+i+")";
+const num=(id,d)=>{const v=parseInt($(id).value,10);return isNaN(v)?d:Math.max(0,v)};
+const hm=m=>{m=Math.round(m);return Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"m"};
+function clock(t){const day=Math.floor(t/1440),m=((t%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")+(day>0?" +"+day+"d":"")}
+function parseT(s){const m=/^(\d{1,2}):?(\d{2})$/.exec(s.trim());if(!m)return null;const h=+m[1],n=+m[2];return h<24&&n<60?h*60+n:null}
+function gapRow(c,inc){const j=inc.indexOf(c);if(j<=0)return"";const p=inc[j-1],v=gp(p,c);return '<div class="gp"><span>Buffer, '+p.ab+' to '+c.ab+'</span><div class="seg3" role="group" aria-label="Buffer between '+p.name+' and '+c.name+'">'+[5,10,15].map(n=>'<button type="button" data-gk="'+gk(p,c)+'" data-gv="'+n+'" aria-pressed="'+(v===n)+'">'+n+'</button>').join("")+'</div></div>'}
+function rows(){const inc=crews.filter(c=>c.inc);
+ const aug=$("aug").checked;
+ $("crew").innerHTML=crews.map((c,i)=>gapRow(c,inc)+
+ '<div class="cr"><div class="dot" style="background:'+col(c.c)+'">'+c.ab+'</div>'+
+ '<div>'+(c.pilot?c.name:'<label class="chk" style="font-size:15px"><input type="checkbox" data-i="'+i+'" class="inc"'+(c.inc?" checked":"")+'><span>'+c.name+'</span></label>')+
+ '<small>'+(c.pilot?(aug?"Minimum "+hm(c.min):"No minimum applied"):"Courtesy rest, not FTL regulated")+'</small></div>'+
+ '<input type="number" min="1" placeholder="auto" aria-label="'+c.name+' rest length in minutes" data-i="'+i+'" class="man" value="'+c.man+'" inputmode="numeric">'+
+ '<div class="mv"><button type="button" data-m="'+i+'" data-d="-1" aria-label="Move '+c.name+' earlier"'+(i==0?" disabled":"")+'>▲</button><button type="button" data-m="'+i+'" data-d="1" aria-label="Move '+c.name+' later"'+(i==crews.length-1?" disabled":"")+'>▼</button></div></div>').join("");
+}
+function plan(L,W,s,aug){
+ const k=L.length,GS=gsum(L),avail=W-GS;
+ if(avail<k)return{err:"Only "+Math.max(avail,0)+" min is left for rest after the buffers. Reduce the buffers or remove a rest."};
+ const man=c=>+c.man>0?+c.man:0,al=new Map();
+ const preq=L.filter(c=>c.pilot).reduce((t,c)=>t+(man(c)||(aug?c.min:0)),0);
+ let rem=avail,autos=[],sumM=0;
+ for(const c of L){let m=man(c);
+  if(m&&aug&&!c.pilot){m=Math.min(m,avail-preq);if(m<1)return{drop:true}}
+  if(m>0){al.set(c,m);rem-=m;sumM+=m}else autos.push(c)}
+ if(rem<0)return{err:"The lengths you entered total "+hm(sumM)+", which is "+hm(-rem)+" more than the "+hm(avail)+" available."};
+ for(let go=true;go&&autos.length;){go=false;const sh=rem/autos.length;
+  const c=autos.find(c=>aug&&c.pilot&&c.min>sh);
+  if(c){al.set(c,c.min);rem-=c.min;autos=autos.filter(x=>x!==c);go=true}}
+ if(rem<0)return plan(L,W,s,false);
+ if(autos.length&&rem<autos.length){return autos.some(c=>!c.pilot)?{drop:true}:{err:"The lengths you entered leave "+rem+" min for the remaining crew. Shorten one of them."}}
+ const base=autos.length?Math.floor(rem/autos.length):0;let ex=autos.length?rem-base*autos.length:0;
+ const spread=autos.length?0:rem,sb=Math.floor(spread/k);let sx=spread-sb*k;
+ const lo=autos.length?ex:sx;let tc=null,tg=-1,tT=0,tL=0,applied="auto";
+ if(lo>0){const t=extraTo;
+  if(t.startsWith("c:"))tc=L.find(c=>c.id===t.slice(2))||null;
+  else if(t.startsWith("g:"))tg=L.findIndex((c,i)=>i<k-1&&gk(c,L[i+1])===t.slice(2));
+  else if(t==="take")tT=lo;else if(t==="land")tL=lo;
+  if(tc||tg>=0||tT||tL){applied=t;ex=0;sx=0}}
+ let cur=s+tT;const R=[];
+ L.forEach((c,i)=>{let d=al.get(c),x=0;
+  if(autos.includes(c)){d=base+(ex>0?1:0);if(ex>0){ex--;x=1}}
+  else if(spread>0){x=sb+(sx>0?1:0);if(sx>0)sx--;d+=x}
+  if(tc===c){d+=lo;x+=lo}
+  const g=i<k-1?gp(c,L[i+1])+(i===tg?lo:0):0;
+  R.push({c,d,x,g,s:cur,e:cur+d});cur+=d+g});
+ return{R,GS:GS+(tg>=0?lo:0),spread,lo,applied,tT,tL}}
+function calc(){
+ const out=$("out"),aug=$("aug").checked;
+ const F=num("fh",0)*60+num("fm",0),B=num("bf",0),A=num("af",0),T=parseT($("to").value);
+ const err=t=>out.innerHTML='<div class="msg">'+t+'</div>';
+ if(T===null)return err("Enter the takeoff time as 24-hour UTC, for example 22:15 or 0345.");
+ if(F<=0)return err("Enter a flight time greater than zero.");
+ const W=F-B-A,s0=T+B;
+ let L=crews.filter(c=>c.inc);const cs=L.find(c=>!c.pilot);let dropped=false;
+ let P=plan(L,W,s0,aug);
+ const noCS=()=>{L=L.filter(c=>c.pilot);dropped=true;return plan(L,W,s0,aug)};
+ if(P.drop)P=noCS();
+ if(!P.err&&aug&&cs&&!dropped&&P.R.some(r=>r.c.pilot&&r.d<r.c.min)){const alt=plan(L.filter(c=>c.pilot),W,s0,aug);if(!alt.err){L=L.filter(c=>c.pilot);dropped=true;P=alt}}
+ if(P.err)return err(P.err);
+ const R=P.R,GS=P.GS,spread=P.spread,k=R.length;
+ const short=R.filter(r=>aug&&r.c.pilot&&r.d<r.c.min);
+ let h="";
+ if(short.length)h+='<div class="msg"><b>Minimum rest not met:</b> '+short.map(r=>r.c.name+" is "+(r.c.min-r.d)+" min short").join(", ")+". Reduce buffers or lengths you set by hand.</div>";
+ else if(aug)h+='<div class="msg good">All pilot minimums are met.</div>';
+ if(dropped)h+='<div class="msg">Not enough time for a Cabin Server rest once the pilots have their minimums, so it has been left out.</div>';
+ else if(aug&&cs){const eq=plan(L,W,s0,false),a=R.find(r=>!r.c.pilot),b=eq.R&&eq.R.find(r=>!r.c.pilot);
+  if(a&&b&&a.d<b.d)h+='<div class="msg good">Cabin Server rest reduced from '+hm(b.d)+' to '+hm(a.d)+' to give the pilots their minimums.</div>'}
+ if(P.lo>0){const opts=[["auto","Auto: first rests in the order"]].concat(R.map(r=>["c:"+r.c.id,"Rest: "+r.c.name])).concat(R.slice(0,-1).map((r,i)=>["g:"+gk(r.c,R[i+1].c),"Buffer: "+r.c.ab+" to "+R[i+1].c.ab])).concat([["take","After takeoff buffer"],["land","Before landing buffer"]]);
+  h+='<div class="msg spare"><b>'+P.lo+' spare minute'+(P.lo>1?'s':'')+'</b> cannot be divided evenly (whole minutes only). Add '+(P.lo>1?'them':'it')+' to: <select id="extra" aria-label="Where to add the spare minutes">'+opts.map(o=>'<option value="'+o[0]+'"'+(o[0]===P.applied?' selected':'')+'>'+o[1]+'</option>').join("")+'</select></div>'}
+ if(spread>0)h+='<div class="msg good">'+spread+' spare min shared across all rests so none is left unallocated.</div>';
+ h+='<h2>Rest plan</h2><div class="stats">'+
+ '<div class="stat"><b>'+hm(W)+'</b><span>Window after buffers</span></div>'+
+ '<div class="stat"><b>'+k+'</b><span>Rests, '+GS+' min of buffers</span></div>'+
+ '<div class="stat"><b>'+clock(T+F)+'</b><span>Landing UTC</span></div></div>';
+ h+='<div class="bar" role="img" aria-label="Rest timeline">';
+ if(B+P.tT)h+='<div class="s fx" style="flex:'+(B+P.tT)+'"></div>';
+ R.forEach((r,i)=>{h+='<div class="s" style="flex:'+r.d+';background:'+col(r.c.c)+'">'+(r.d/F>.04?r.c.ab:"")+'</div>';
+  if(i<R.length-1)h+='<div class="s fx" style="flex:'+r.g+';background:var(--bg)"></div>'});
+ if(A+P.tL)h+='<div class="s fx" style="flex:'+(A+P.tL)+'"></div>';
+ h+='</div><div class="axis"><span>'+clock(T)+'Z takeoff</span><span>'+clock(T+F)+'Z landing</span></div>';
+ h+='<div class="tw"><table><thead><tr><th>Order</th><th>Crew</th><th>Start UTC</th><th>End UTC</th><th>Length</th><th>Check</th></tr></thead><tbody>';
+ R.forEach((r,i)=>{let ck;
+  if(!r.c.pilot)ck='<span class="mu">No minimum</span>';
+  else if(!aug)ck='<span class="mu">No minimum</span>';
+  else if(r.d<r.c.min)ck='<span class="bad">Short by '+(r.c.min-r.d)+' min</span>';
+  else ck='<span class="ok">Meets '+hm(r.c.min)+'</span>';
+  h+='<tr><td>'+(i+1)+'</td><td><span class="dot" style="display:inline-flex;width:auto;padding:0 8px;vertical-align:middle;background:'+col(r.c.c)+'">'+r.c.ab+'</span> '+r.c.name+'</td><td>'+clock(r.s)+'</td><td>'+clock(r.e)+'</td><td>'+hm(r.d)+(r.x?' <span class="xt" title="Spare minute from rounding">+'+r.x+' min</span>':'')+'</td><td>'+ck+'</td></tr>'});
+ h+='</tbody></table></div>';
+ const zc=t=>clock(t).replace(/^(\d\d:\d\d)/,"$1Z");
+ let tx="CREW REST PLAN (all times UTC)\n"+
+  "Takeoff "+zc(T)+" | Landing "+zc(T+F)+" | Flight "+hm(F)+"\n"+
+  "Augmented crew: "+(aug?"yes":"no")+"\n"+
+  "No-rest buffers: "+(B+P.tT)+" min after takeoff, "+(A+P.tL)+" min before landing\n\n"+
+  R.map((r,i)=>(i+1)+". "+r.c.ab+" "+r.c.name+": "+zc(r.s)+" - "+zc(r.e)+" ("+hm(r.d)+")"+(i<R.length-1?"\n    buffer "+r.g+" min":"")).join("\n");
+ if(dropped)tx+="\n\nCabin Server rest left out (not enough time).";
+ if(short.length)tx+="\n\nMINIMUM REST NOT MET: "+short.map(r=>r.c.ab+" "+(r.c.min-r.d)+" min short").join(", ");
+ shareText=tx;shareSub="Crew rest plan - takeoff "+zc(T);
+ shareImg=drawPlan({T,F,B:B+P.tT,A:A+P.tL,R,aug,short,dropped});
+ const canShare=typeof navigator!=="undefined"&&!!navigator.share;
+ h+='<h2 style="margin-top:22px">Share plan</h2><div class="share">'+
+  '<button type="button" class="btn pri" data-sh="img">Share image</button>'+
+  (canShare?'<button type="button" class="btn" data-sh="share">Share text</button>':'')+
+  '<button type="button" class="btn" data-sh="copy">Copy text</button>'+
+  '<a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(tx)+'">WhatsApp</a>'+
+  '</div>'+
+  '<p class="hint">Share image sends the coloured timeline and table as a picture. You may be asked to confirm, then choose where to send or save it. The WhatsApp button sends plain text only.</p>'+
+  '<details class="pv"><summary>Preview image</summary>'+(shareImg?'<img class="pimg" alt="Rest plan image" src="'+shareImg+'">':'<p class="hint">Image not available.</p>')+'</details>'+
+  '<details class="pv"><summary>Preview text</summary><pre>'+esc(tx)+'</pre></details>';
+ out.innerHTML=h;
+}
+function drawPlan(d){
+ try{
+ const S=2,Wd=760,pad=28,cw=Wd-2*pad,PAL=["#1b7f8c","#b86f0c","#6a58c9","#c2415f"],FF="-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif";
+ const zc=t=>clock(t).replace(/^(\d\d:\d\d)/,"$1Z");
+ const warns=[];
+ if(d.dropped)warns.push("Cabin Server rest left out (not enough time).");
+ if(d.short.length)warns.push("MINIMUM REST NOT MET: "+d.short.map(r=>r.c.ab+" "+(r.c.min-r.d)+" min short").join(", "));
+ const n=d.R.length,H=pad+34+24+26+48+34+30+40*n+(warns.length?14+24*warns.length:0)+26+20;
+ const cv=document.createElement("canvas");cv.width=Wd*S;cv.height=H*S;
+ const x=cv.getContext("2d");x.scale(S,S);
+ x.fillStyle="#fff";x.fillRect(0,0,Wd,H);
+ let y=pad;x.textAlign="left";x.textBaseline="alphabetic";
+ x.fillStyle="#14202b";x.font="700 28px "+FF;x.fillText("Crew rest plan",pad,y+24);y+=34;
+ x.font="500 16px "+FF;x.fillText("Takeoff "+zc(d.T)+"    Landing "+zc(d.T+d.F)+"    Flight "+hm(d.F),pad,y+16);y+=24;
+ x.font="400 14px "+FF;x.fillStyle="#5b6b78";
+ x.fillText((d.aug?"Augmented crew":"Not augmented")+"  |  No-rest buffers: "+d.B+" min after takeoff, "+d.A+" min before landing  |  UTC",pad,y+14);y+=26;
+ const bh=48,X=t=>pad+(t-d.T)/d.F*cw,last=d.R[n-1];
+ x.save();x.beginPath();x.rect(pad,y,cw,bh);x.clip();
+ x.fillStyle="#e3e8ec";x.fillRect(pad,y,cw,bh);
+ x.fillStyle="#b9c3cb";x.fillRect(pad,y,X(d.R[0].s)-pad,bh);x.fillRect(X(last.e),y,pad+cw-X(last.e),bh);
+ d.R.forEach(r=>{const a=X(r.s),b=X(r.e);x.fillStyle=PAL[r.c.c%4];x.fillRect(a,y,b-a,bh);
+  if(b-a>34){x.fillStyle="#fff";x.font="700 14px "+FF;x.textAlign="center";x.textBaseline="middle";x.fillText(r.c.ab,(a+b)/2,y+bh/2+1)}});
+ x.restore();x.textAlign="left";x.textBaseline="alphabetic";
+ x.strokeStyle="#cdd6dc";x.lineWidth=1;x.strokeRect(pad+.5,y+.5,cw-1,bh-1);y+=bh;
+ x.font="400 13px "+FF;x.fillStyle="#5b6b78";x.fillText(zc(d.T)+" takeoff",pad,y+18);
+ x.textAlign="right";x.fillText(zc(d.T+d.F)+" landing",pad+cw,y+18);x.textAlign="left";y+=34;
+ x.font="600 13px "+FF;x.fillStyle="#5b6b78";
+ [["Crew",pad],["Start",270],["End",390],["Length",500],["Check",622]].forEach(c=>x.fillText(c[0],c[1],y+20));
+ x.strokeStyle="#cdd6dc";x.beginPath();x.moveTo(pad,y+30);x.lineTo(pad+cw,y+30);x.stroke();y+=30;
+ d.R.forEach(r=>{
+  x.fillStyle=PAL[r.c.c%4];x.fillRect(pad,y+7,38,26);
+  x.fillStyle="#fff";x.font="700 13px "+FF;x.textAlign="center";x.textBaseline="middle";x.fillText(r.c.ab,pad+19,y+21);
+  x.textAlign="left";x.fillStyle="#14202b";x.font="500 16px "+FF;
+  x.fillText(r.c.name,pad+46,y+21);x.fillText(zc(r.s),270,y+21);x.fillText(zc(r.e),390,y+21);
+  x.fillText(hm(r.d)+(r.x?" (+"+r.x+")":""),500,y+21);
+  let ck="",cc="#5b6b78";
+  if(!r.c.pilot||!d.aug){ck="No minimum"}else{if(r.d<r.c.min){ck="Short "+(r.c.min-r.d)+" min";cc="#b4232c"}else{ck="Meets "+hm(r.c.min);cc="#23774a"}}
+  x.font="600 14px "+FF;x.fillStyle=cc;x.fillText(ck,622,y+21);
+  x.textBaseline="alphabetic";x.strokeStyle="#e3e8ec";x.beginPath();x.moveTo(pad,y+40);x.lineTo(pad+cw,y+40);x.stroke();y+=40});
+ if(warns.length){y+=14;x.font="600 14px "+FF;x.fillStyle="#b4232c";warns.forEach(w=>{x.fillText(w,pad,y+16);y+=24})}
+ x.font="400 12px "+FF;x.fillStyle="#5b6b78";x.fillText("Planning aid only. Check against your operator's approved rest rules.",pad,y+14);
+ return cv.toDataURL("image/png");
+ }catch(e){return ""}
+}
+function dataBlob(du){const b=atob(du.split(",")[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new Blob([u],{type:"image/png"})}
+function flash(b,m){const o=b.textContent;b.textContent=m;setTimeout(()=>{b.textContent=o},2200)}
+async function shareImage(b){
+ if(!shareImg){flash(b,"Image not available");return}
+ const f=new File([dataBlob(shareImg)],"crew-rest-plan.png",{type:"image/png"});
+ try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:shareSub});return}}catch(e){if(e&&e.name==="AbortError")return}
+ try{const dl=window.claude&&await window.claude.use("downloads");
+  if(dl){await dl.save({filename:"crew-rest-plan.png",data:f});flash(b,"Image saved");return}}
+ catch(e){if(e&&e.code==="declined")return}
+ let fr=false;try{fr=window.self!==window.top}catch(e){fr=true}
+ if(fr){const d=document.querySelector(".pv");if(d){d.open=true;d.scrollIntoView({block:"nearest"})}flash(b,"Press and hold the image below to save");return}
+ try{const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove();flash(b,"Image saved")}
+ catch(e){flash(b,"Press and hold the preview image")}
+}
+async function doShare(b){
+ if(b.dataset.sh==="img"){await shareImage(b);return}
+ if(b.dataset.sh==="share"){try{await navigator.share({title:shareSub,text:shareText})}catch(e){}return}
+ let ok=false;
+ try{await navigator.clipboard.writeText(shareText);ok=true}catch(e){
+  try{const t=document.createElement("textarea");t.value=shareText;t.readOnly=true;t.style.cssText="position:fixed;top:0;opacity:0";document.body.appendChild(t);t.select();t.setSelectionRange(0,99999);ok=document.execCommand("copy");t.remove()}catch(e2){}}
+ const o=b.textContent;b.textContent=ok?"Copied":"Copy failed - use Preview";setTimeout(()=>{b.textContent=o},2200)}
+document.addEventListener("input",e=>{const t=e.target;
+ if(t.id==="extra")extraTo=t.value;
+ if(t.classList.contains("man"))crews[+t.dataset.i].man=t.value;
+ if(t.classList.contains("inc")){crews[+t.dataset.i].inc=t.checked;rows()}
+ if(t.id==="aug")rows();
+ calc()});
+document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.g){G=+b.dataset.g;for(const q in gaps)delete gaps[q];document.querySelectorAll("#gap button").forEach(x=>x.setAttribute("aria-pressed",x===b));rows();calc()}
+ if(b.dataset.gk){gaps[b.dataset.gk]=+b.dataset.gv;rows();calc()}
+ if(b.dataset.sh)doShare(b);
+ if(b.dataset.m){const i=+b.dataset.m,j=i+ +b.dataset.d;if(j>=0&&j<crews.length){[crews[i],crews[j]]=[crews[j],crews[i]];rows();calc()}}});
+rows();calc();
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+</script>
+</body>
+</html>
